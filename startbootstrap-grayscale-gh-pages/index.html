@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Pondok Pesantren</title>
+        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet" />
+       
+       <script src='https://api.mapbox.com/mapbox-gl-js/v3.15.0/mapbox-gl.js'></script>
+        <link href='https://api.mapbox.com/mapbox-gl-js/v3.15.0/mapbox-gl.css' rel='stylesheet' />
+        
+        <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.3.1/mapbox-gl-directions.js"></script>
+        <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.3.1/mapbox-gl-directions.css" type="text/css">
+
+    </head>
+    <body id="page-top">
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+            <div class="container px-4 px-lg-5">
+                <a class="navbar-brand" href="#page-top">Teknik Geomatika</a>
+                <button class="navbar-toggler navbar-toggler-right" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                    Menu
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item"><a class="nav-link" href="#about">Informasi</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#projects">Peta</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#signup">Kontak</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <!-- Masthead-->
+        <header class="masthead">
+            <div class="container px-4 px-lg-5 d-flex h-100 align-items-center justify-content-center">
+                <div class="d-flex justify-content-center">
+                    <div class="text-center">
+                        <h1 class="mx-auto my-0 text-uppercase">Pondok Pesantren Al-Munawwir</h1>
+                        <h2 class="text-white-50 mx-auto mt-2 mb-5">Lokasi Bangunan Pondok Pesantren Al-Munnawir</h2>
+                        <a class="btn btn-primary" href="#about">Mulai</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- hero-->
+        <section class="about-section text-center" id="about">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-lg-8">
+                        <h2 class="text-white mb-4">Pondok Pesantren Al-Munawwir</h2>
+                        <p class="text-white-50">
+                            Pondok Pesantren ini berada di Krapyak Kulon, Panggungharjo, Kec. Sewon, Kabupaten Bantul, Daerah Istimewa Yogyakarta 55188
+                        </p>
+                    </div>
+                </div>
+                <img class="img-fluid" src="assets/img/img2.jpg" alt="..." />
+            </div>
+        </section>
+
+        <!-- Projects-->
+        <section class="projects-section bg-light" id="projects">
+            <div class="container px-4 px-lg-5">
+                <!-- Featured Project Row-->    
+                <h2 class="text-center mb-4">Peta Lokasi Pondok Pesantren Al-Munawwir</h2>
+                <div id='map'></div>
+                <div id="legend"></div>
+
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoibmZsYWtocm5uc2EiLCJhIjoiY21nOTV5cjRnMGR6eDJqcTB6Ym5rdXhvaSJ9.JE7QI26o4gt8OuPneijhiA';
+const map = new mapboxgl.Map({
+	container: 'map', // container ID
+	style: 'mapbox://styles/mapbox/streets-v12', // style URL
+	center: [110.3614, -7.8269], // pusatkan ke lokasi pondok
+	zoom: 16, // starting zoom
+});
+
+ // === Fungsi tambah GeoJSON Layers ===
+function addGeojsonLayers() {
+  // asrama putra
+  if (!map.getSource('asramaputra')) {
+    map.addSource('asramaputra', {
+      type: 'geojson',
+      data: 'assets/geojson/asramaputra.geojson'
+    });
+  }
+  map.addLayer({
+    id: 'asramaputra-fill',
+    type: 'fill',
+    source: 'asramaputra',
+    paint: {'fill-color': '#088','fill-opacity': 0.4}
+  });
+  map.addLayer({
+    id: 'asramaputra-outline',
+    type: 'line',
+    source: 'asramaputra',
+    paint: {'line-color': '#000','line-width': 2}
+  });
+
+  // popup putra
+  map.on('click', 'asramaputra-fill', (e) => {
+    const props = e.features[0].properties;
+    const html = `<h3>${props.Nama}</h3><p><b>Kategori:</b> ${props.Kategori}</p>${props.foto || ''}`;
+    new mapboxgl.Popup().setLngLat(e.lngLat).setHTML(html).addTo(map);
+  });
+
+  // asrama putri
+  if (!map.getSource('asramaputri')) {
+    map.addSource('asramaputri', {
+      type: 'geojson',
+      data: 'assets/geojson/asramaputri.geojson'
+    });
+  }
+  map.addLayer({
+    id: 'asramaputri-fill',
+    type: 'fill',
+    source: 'asramaputri',
+    paint: {'fill-color': '#760','fill-opacity': 0.4}
+  });
+  map.addLayer({
+    id: 'asramaputri-outline',
+    type: 'line',
+    source: 'asramaputri',
+    paint: {'line-color': '#000','line-width': 2}
+  });
+  // popup putri
+  map.on('click', 'asramaputri-fill', (e) => {
+    const props = e.features[0].properties;
+    const html = `<h3>${props.Nama}</h3><p><b>Kategori:</b> ${props.Kategori}</p>${props.foto || ''}`;
+    new mapboxgl.Popup().setLngLat(e.lngLat).setHTML(html).addTo(map);
+  });
+
+  // bangunan umum
+  if (!map.getSource('bangunanumum')) {
+    map.addSource('bangunanumum', {
+      type: 'geojson',
+      data: 'assets/geojson/bangunanumum.geojson'
+    });
+  }
+  map.addLayer({
+    id: 'bangunanumum-fill',
+    type: 'fill',
+    source: 'bangunanumum',
+    paint: {'fill-color': '#037','fill-opacity': 0.4}
+  });
+  map.addLayer({
+    id: 'bangunanumum-outline',
+    type: 'line',
+    source: 'bangunanumum',
+    paint: {'line-color': '#000','line-width': 2}
+  });
+  // popup putra
+  map.on('click', 'bangunanumum-fill', (e) => {
+    const props = e.features[0].properties;
+    const html = `<h3>${props.Nama}</h3><p><b>Kategori:</b> ${props.Kategori}</p>${props.foto || ''}`;
+    new mapboxgl.Popup().setLngLat(e.lngLat).setHTML(html).addTo(map);
+  });
+}
+
+// load pertama
+map.on('load', () => {
+  addGeojsonLayers();
+});
+
+// kalau ganti style → tambahin lagi
+map.on('style.load', () => {
+  addGeojsonLayers();
+});
+
+ map.addControl(
+        new MapboxDirections({
+            accessToken: mapboxgl.accessToken
+        }),
+        'top-left'
+    );
+    // Tambahin tombol zoom & compass bawaan
+  map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+
+  
+// === Basemap Control Custom ===
+class BasemapControl {
+  onAdd(map) {
+    this._map = map;
+    this._container = document.createElement('div');
+    this._container.className = 'mapboxgl-ctrl mapboxgl-ctrl-group';
+    this._container.style.position = "relative";
+
+    const iconBtn = document.createElement('button');
+    iconBtn.innerHTML = "☰";
+    iconBtn.style.padding = "6px 10px";
+    iconBtn.style.cursor = "pointer";
+
+    const dropdown = document.createElement('div');
+    dropdown.style.position = "absolute";
+    dropdown.style.top = "40px";
+    dropdown.style.right = "0";
+    dropdown.style.background = "#fff";
+    dropdown.style.border = "1px solid #ccc";
+    dropdown.style.borderRadius = "6px";
+    dropdown.style.padding = "4px";
+    dropdown.style.display = "none";
+
+    const styles = {
+      "Streets": "mapbox://styles/mapbox/streets-v12",
+      "Satellite": "mapbox://styles/mapbox/satellite-v9",
+      "Hybrid": "mapbox://styles/mapbox/satellite-streets-v12",
+      "Dark": "mapbox://styles/mapbox/dark-v11"
+    };
+
+    for (let name in styles) {
+      const btn = document.createElement('div');
+      btn.textContent = name;
+      btn.style.padding = "6px 10px";
+      btn.style.cursor = "pointer";
+      btn.onclick = () => {
+        map.setStyle(styles[name]);
+        dropdown.style.display = "none";
+      };
+      dropdown.appendChild(btn);
+    }
+
+    iconBtn.onclick = () => {
+      dropdown.style.display = (dropdown.style.display === "none") ? "block" : "none";
+    };
+
+    this._container.appendChild(iconBtn);
+    this._container.appendChild(dropdown);
+    return this._container;
+  }
+
+  onRemove() {
+    this._container.parentNode.removeChild(this._container);
+    this._map = undefined;
+  }
+}
+
+map.addControl(new BasemapControl(), "top-right");
+
+    </script>
+            </div>
+        </section>
+        
+        <!-- Contact-->
+        <section class="contact-section bg-black">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5">
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <div class="card py-4 h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-map-marked-alt text-primary mb-2"></i>
+                                <h4 class="text-uppercase m-0">Alamat</h4>
+                                <hr class="my-4 mx-auto" />
+                                <div class="small text-black-50">Jl. KH. Ali Maksum No.111, Krapyak Kulon, Panggungharjo, Kec. Sewon, Kabupaten Bantul, Daerah Istimewa Yogyakarta 55188</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <div class="card py-4 h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-envelope text-primary mb-2"></i>
+                                <h4 class="text-uppercase m-0">Email</h4>
+                                <hr class="my-4 mx-auto" />
+                                <div class="small text-black-50"><a href="#!">almunawwirkomplekq89@gmail.com</a></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <div class="card py-4 h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-mobile-alt text-primary mb-2"></i>
+                                <h4 class="text-uppercase m-0">Telepon</h4>
+                                <hr class="my-4 mx-auto" />
+                                <div class="small text-black-50">(0274) 383768</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Footer-->
+        <footer class="footer bg-black small text-center text-white-50"><div class="container px-4 px-lg-5">Copyright &copy; Nafila Khoirunnisa_117220010</div></footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+        <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
+        <!-- * *                               SB Forms JS                               * *-->
+        <!-- * * Activate your form at https://startbootstrap.com/solution/contact-forms * *-->
+        <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
+        <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
+    </body>
+</html>
